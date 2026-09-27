@@ -9,6 +9,9 @@
     "build": "sanity build",
     "deploy": "sanity deploy",
     "dev": "sanity dev",
+    "vendor": "node tools/vendor.mjs",
+    "vendor:check": "node tools/vendor.mjs --check",
+    "typecheck": "tsc --noEmit",
     "start": "sanity start"
   },
   "keywords": [

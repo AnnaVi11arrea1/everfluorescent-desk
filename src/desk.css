@@ -1,0 +1,432 @@
+/* The review desk. Ever Fluorescent's UV palette, so the app reads as part of
+   the same system as the store admin rather than a stock template. */
+
+:root {
+  --desk-bg: #0a0514;
+  --desk-panel: #140b28;
+  --desk-sunken: #080310;
+  --desk-border: #2c1c52;
+  --desk-border-bright: #3d2870;
+  --desk-ink: #e8e3f6;
+  --desk-muted: #8d83ad;
+  --desk-accent: #8b3dff;
+  --desk-magenta: #ff2ea6;
+  --desk-cyan: #2ee6ff;
+  --desk-lume: #b6ff3c;
+  --desk-danger: #ff4d6d;
+  --desk-radius: 12px;
+}
+
+body {
+  margin: 0;
+  background: var(--desk-bg);
+  color: var(--desk-ink);
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+}
+
+.desk {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 20px 64px;
+}
+
+.desk-head h1 {
+  font-size: 26px;
+  margin: 0 0 6px;
+  letter-spacing: -0.01em;
+}
+.desk-sub {
+  color: var(--desk-muted);
+  font-size: 14px;
+  margin: 0;
+  max-width: 62ch;
+  line-height: 1.5;
+}
+
+/* --- filters --------------------------------------------------------------- */
+
+.desk-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 22px 0 18px;
+}
+.desk-chip {
+  background: transparent;
+  border: 1px solid var(--desk-border-bright);
+  color: var(--desk-muted);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: border-color 0.15s, color 0.15s;
+}
+.desk-chip:hover {
+  color: var(--desk-ink);
+  border-color: var(--desk-accent);
+}
+.desk-chip.is-active {
+  background: rgba(139, 61, 255, 0.12);
+}
+.desk-chip__warn {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--desk-danger);
+}
+
+.desk-warning {
+  border: 1px solid rgba(255, 77, 109, 0.45);
+  background: rgba(255, 77, 109, 0.08);
+  border-radius: var(--desk-radius);
+  padding: 12px 16px;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+/* --- the grid. Cards size to their content and wrap; they do not stretch. --- */
+
+.desk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+@media (max-width: 520px) {
+  .desk-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: var(--desk-panel);
+  border: 1px solid var(--desk-border);
+  border-radius: var(--desk-radius);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.card--skeleton {
+  min-height: 220px;
+  opacity: 0.4;
+}
+.card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+.card__title {
+  font-family: 'Chakra Petch', system-ui, sans-serif;
+  font-size: 16px;
+  margin: 0;
+  line-height: 1.3;
+}
+.card__hook {
+  color: var(--desk-muted);
+  font-size: 13px;
+  margin: 4px 0 0;
+}
+.card__badges {
+  display: flex;
+  gap: 6px;
+  flex: none;
+}
+.tag {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  border: 1px solid var(--desk-border-bright);
+  color: var(--desk-muted);
+  border-radius: 999px;
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+.tag--agent {
+  border-color: rgba(46, 230, 255, 0.5);
+  color: var(--desk-cyan);
+}
+
+.card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 12px;
+  color: var(--desk-muted);
+}
+.card__meta .cited {
+  color: var(--desk-lume);
+}
+.card__meta .uncited {
+  color: var(--desk-magenta);
+}
+.card__blocked {
+  margin: 0;
+  font-size: 12.5px;
+  color: #ffb3c1;
+  background: rgba(255, 77, 109, 0.09);
+  border-left: 2px solid var(--desk-danger);
+  padding: 8px 10px;
+  border-radius: 0 6px 6px 0;
+  line-height: 1.45;
+}
+
+.card__variants {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* --- one platform variant -------------------------------------------------- */
+
+.variant {
+  background: var(--desk-sunken);
+  border: 1px solid var(--desk-border);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.variant--ready {
+  border-color: rgba(182, 255, 60, 0.3);
+}
+.variant--blocked {
+  border-color: rgba(255, 77, 109, 0.35);
+}
+
+.variant__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.variant__platform {
+  font-weight: 600;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.variant__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.variant__format {
+  color: var(--desk-muted);
+  font-size: 11.5px;
+}
+.verdict {
+  margin-left: auto;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  border-radius: 999px;
+  padding: 3px 9px;
+}
+.verdict--ok {
+  color: var(--desk-lume);
+  border: 1px solid rgba(182, 255, 60, 0.4);
+}
+.verdict--blocked {
+  color: var(--desk-danger);
+  border: 1px solid rgba(255, 77, 109, 0.4);
+}
+
+.variant__body {
+  display: flex;
+  gap: 12px;
+}
+.variant__media {
+  width: 76px;
+  height: 76px;
+  flex: none;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #0d0620;
+  border: 1px solid var(--desk-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.variant__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.variant__video {
+  font-size: 10px;
+  color: var(--desk-muted);
+  text-align: center;
+}
+.variant__text {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.variant__caption {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 7.5em;
+  overflow-y: auto;
+}
+
+.meter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.meter__track {
+  flex: 1;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.09);
+  overflow: hidden;
+}
+.meter__fill {
+  display: block;
+  height: 100%;
+  background: var(--desk-cyan);
+}
+.meter__fill.is-chatty {
+  background: var(--desk-magenta);
+}
+.meter__fill.is-over {
+  background: var(--desk-danger);
+}
+.meter__label {
+  font-size: 10.5px;
+  color: var(--desk-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.issues {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.issue {
+  font-size: 12px;
+  line-height: 1.45;
+  display: flex;
+  gap: 7px;
+  align-items: flex-start;
+}
+.issue__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-top: 0.42em;
+  flex: none;
+}
+.issue--error {
+  color: #ffb3c1;
+}
+.issue--error .issue__dot {
+  background: var(--desk-danger);
+}
+.issue--warning {
+  color: var(--desk-ink);
+}
+.issue--warning .issue__dot {
+  background: var(--desk-magenta);
+}
+.issue--info {
+  color: var(--desk-muted);
+}
+.issue--info .issue__dot {
+  background: var(--desk-cyan);
+}
+
+.variant__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.variant__status {
+  margin-left: auto;
+  font-size: 10.5px;
+  color: var(--desk-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.btn {
+  background: transparent;
+  border: 1px solid var(--desk-border-bright);
+  color: var(--desk-ink);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, opacity 0.15s;
+}
+.btn:hover:not(:disabled) {
+  border-color: var(--desk-accent);
+  box-shadow: 0 0 18px rgba(139, 61, 255, 0.3);
+}
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.btn--primary:not(:disabled) {
+  background: linear-gradient(135deg, var(--desk-accent), var(--desk-magenta));
+  border-color: transparent;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* --- states ---------------------------------------------------------------- */
+
+.desk-empty,
+.desk-loading {
+  color: var(--desk-muted);
+  padding: 40px 0;
+  text-align: center;
+  font-size: 14px;
+}
+.desk-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.desk-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--desk-border-bright);
+  border-top-color: var(--desk-accent);
+  border-radius: 50%;
+  animation: desk-spin 0.7s linear infinite;
+}
+@keyframes desk-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .desk-spinner {
+    animation: none;
+  }
+}
+.desk-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 22px;
+}
