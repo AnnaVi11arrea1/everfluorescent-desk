@@ -39,13 +39,6 @@ body {
   max-width: 1480px;
   margin: 0 auto;
   padding: 24px 22px 72px;
-  /* Everything below sizes itself against THIS, not the viewport. The app renders
-     in a panel inside the Sanity Dashboard, where the window can be 1600px wide
-     while the space here is 900px — a media query would promise room that is not
-     there. Same reason useRadialLayout measures the wheel's parent rather than
-     asking matchMedia. */
-  container-type: inline-size;
-  container-name: desk;
 }
 
 /* ---- header --------------------------------------------------------------- */
@@ -123,117 +116,84 @@ body {
   margin: 0 0 18px;
 }
 
-/* ---- rail + stage --------------------------------------------------------- */
+/* ---- queue bar + stage ---------------------------------------------------- */
 
-/* The wheel needs 920px of container to exist at all (see useRadialLayout), and a
-   250px rail plus its gap comes straight off that budget. So the two-column
-   layout only appears once there is room for both; below that the rail runs
-   horizontally across the top and the wheel gets the whole panel. Otherwise the
-   rail silently costs you the wheel. */
-.desk-split {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 18px;
-  align-items: start;
-}
-@container desk (min-width: 1250px) {
-  .desk-split {
-    grid-template-columns: 250px minmax(0, 1fr);
-    gap: 22px;
-  }
-}
-
-.rail {
+/* A selector, not a rail. A sidebar costs 250px and the wheel needs 920px of
+   container before it can exist at all, so the rail was buying itself space with
+   the thing it exists to help you look at; a strip on top gave the width back but
+   turned ten posts into a long horizontal scroll. This costs one line and no
+   width, so the wheel always gets the whole panel. */
+.queue-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 10px;
+  padding: 10px 12px;
+  margin-bottom: 18px;
 }
-.rail-head {
+.queue-label {
   font-size: 11px;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
   color: var(--muted);
-  margin: 0 0 8px;
-  padding: 0 4px;
 }
-.rail ul {
-  list-style: none;
-  margin: 0;
-  padding: 0 0 2px;
+.queue-picker {
   display: flex;
-  /* Horizontal while the rail is a strip on top. */
-  flex-direction: row;
+  align-items: stretch;
   gap: 6px;
-  overflow-x: auto;
-  scrollbar-width: thin;
+  flex: 1 1 320px;
+  min-width: 0;
 }
-.rail li {
-  flex: 0 0 auto;
-}
-.rail-item {
-  /* Wide enough to read while the rail is a horizontal strip; released back to 0
-     in the container query below, once it becomes a sidebar. */
-  min-width: 178px;
-  width: 100%;
-  text-align: left;
-  background: none;
-  border: 1px solid transparent;
-  border-radius: 9px;
-  padding: 9px 10px;
-  font: inherit;
+.queue-select {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: var(--surface-2);
   color: var(--ink);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-.rail-item:hover {
-  background: var(--surface-2);
-}
-.rail-item.is-active {
-  background: var(--surface-2);
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(139, 61, 255, 0.16);
-}
-.rail-title {
+  border: 1px solid var(--line-bright);
+  border-radius: 9px;
+  padding: 8px 10px;
+  font: inherit;
   font-size: 13px;
-  line-height: 1.35;
   font-weight: 600;
+  cursor: pointer;
+  /* The options are drawn by the OS; this is what keeps them dark rather than a
+     white flash out of a dark page. */
+  color-scheme: dark;
 }
-.rail-meta {
-  font-size: 11px;
+.queue-select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.step {
+  flex: 0 0 auto;
+  width: 32px;
+  background: transparent;
+  border: 1px solid var(--line-bright);
+  border-radius: 9px;
+  color: var(--ink);
+  font: inherit;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+}
+.step:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.step:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.queue-count {
+  margin: 0;
+  font-size: 11.5px;
   color: var(--muted);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.rail-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--cyan);
-  flex-shrink: 0;
-}
-
-/* Once there is room for a sidebar, the rail becomes one. */
-@container desk (min-width: 1250px) {
-  .rail {
-    position: sticky;
-    top: 18px;
-    padding: 12px;
-  }
-  .rail ul {
-    flex-direction: column;
-    gap: 2px;
-    overflow: visible;
-  }
-  .rail li {
-    flex: 1 1 auto;
-  }
-  .rail-item {
-    min-width: 0;
-  }
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .stage {

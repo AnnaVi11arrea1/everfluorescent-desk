@@ -26,9 +26,10 @@ import {useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react'
  *   W   ≥ 2 × (314 + 130 + 12) = 912
  *
  * Full-Send uses 1000px, which is right for a page that owns the window. Here the
- * container is a panel inside the Sanity Dashboard, so every pixel spent on the
- * queue rail comes off this budget — hence measuring the real container and using
- * the real floor instead of a round number.
+ * container is a panel inside the Sanity Dashboard, which can be far narrower than
+ * the window — so this measures the real container and compares it against the
+ * real floor rather than a round number. The queue is a dropdown rather than a
+ * sidebar for the same reason: 250px of rail is 250px the wheel does not have.
  */
 const RADIAL_MIN_WIDTH = 920
 const MAX_SPOKES = 8
