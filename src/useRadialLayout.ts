@@ -18,6 +18,8 @@ const MAX_SPOKES = 8
 const GAP = 24
 const MAX_RX = 560
 const MAX_RY = 1400
+/** How much wider than tall the ellipse may get before it stops reading as a wheel. */
+const MAX_ASPECT = 1.35
 
 export interface Point {
   x: number
@@ -93,29 +95,50 @@ export function useRadialLayout(count: number) {
 
     // Twelve o'clock, then evenly round.
     const angles = cards.map((_, i) => -Math.PI / 2 + (i * 2 * Math.PI) / n)
-    const rx = Math.min(W / 2 - cardW / 2 - 12, MAX_RX)
 
-    // Start at "clears the hub vertically", then raise it for every pair that
-    // would still collide.
-    let ry = hubH / 2 + maxH / 2 + GAP
+    /**
+     * The smallest vertical radius at which nothing overlaps, for a given
+     * horizontal one. Every card must clear the hub, and every pair of cards must
+     * clear each other.
+     */
+    const solveRy = (rx: number) => {
+      let ry = hubH / 2 + maxH / 2 + GAP
 
-    angles.forEach((a, i) => {
-      const s = Math.abs(Math.sin(a))
-      // A card whose horizontal offset does not clear the hub has to clear it
-      // vertically instead.
-      if (Math.abs(Math.cos(a)) * rx < hubW / 2 + cardW / 2 + GAP && s > 0.01) {
-        ry = Math.max(ry, (hubH / 2 + hs[i] / 2 + GAP) / s)
-      }
-      for (let j = i + 1; j < n; j++) {
-        const dx = Math.abs(Math.cos(a) - Math.cos(angles[j])) * rx
-        const ds = Math.abs(Math.sin(a) - Math.sin(angles[j]))
-        if (dx < cardW + GAP && ds > 0.01) {
-          ry = Math.max(ry, ((hs[i] + hs[j]) / 2 + GAP) / ds)
+      angles.forEach((a, i) => {
+        const s = Math.abs(Math.sin(a))
+        // A card whose horizontal offset does not clear the hub has to clear it
+        // vertically instead.
+        if (Math.abs(Math.cos(a)) * rx < hubW / 2 + cardW / 2 + GAP && s > 0.01) {
+          ry = Math.max(ry, (hubH / 2 + hs[i] / 2 + GAP) / s)
         }
-      }
-    })
+        for (let j = i + 1; j < n; j++) {
+          const dx = Math.abs(Math.cos(a) - Math.cos(angles[j])) * rx
+          const ds = Math.abs(Math.sin(a) - Math.sin(angles[j]))
+          if (dx < cardW + GAP && ds > 0.01) {
+            ry = Math.max(ry, ((hs[i] + hs[j]) / 2 + GAP) / ds)
+          }
+        }
+      })
 
-    ry = Math.min(ry, MAX_RY)
+      return Math.min(ry, MAX_RY)
+    }
+
+    let rx = Math.min(W / 2 - cardW / 2 - 12, MAX_RX)
+    let ry = solveRy(rx)
+
+    /**
+     * Keep it reading as a wheel rather than a flat oval.
+     *
+     * On a wide panel rx runs to its ceiling while ry stays near the hub's own
+     * height, which stretches the ellipse until the cards look like a row with
+     * something in the middle. Pulling rx in and SOLVING AGAIN is what keeps it
+     * safe: narrowing rx can introduce horizontal collisions, so the final ry has
+     * to be solved against the final rx, never carried over from the wider one.
+     */
+    if (rx > ry * MAX_ASPECT) {
+      rx = Math.max(ry * MAX_ASPECT, hubW / 2 + cardW / 2 + GAP)
+      ry = solveRy(rx)
+    }
 
     const height = Math.round(2 * ry + maxH + 32)
     const cx = W / 2
