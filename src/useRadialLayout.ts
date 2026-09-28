@@ -9,11 +9,28 @@ import {useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react'
  * two-spoke wheel sits tight and an eight-spoke one opens up, without any
  * per-count tuning.
  *
- * Below 1000px, or above eight spokes, there is no ellipse worth drawing and the
- * layout falls back to a stacked spine (CSS, see .wheel:not(.radial)).
+ * Below the width a wheel geometrically fits in, or above eight spokes, there is
+ * no ellipse worth drawing and the layout falls back to a stacked spine (CSS, see
+ * .wheel:not(.radial)).
  */
 
-const RADIAL_MIN_WIDTH = 1000
+/**
+ * The narrowest container a four-spoke wheel fits in, derived rather than picked.
+ *
+ * The cards at 3 and 9 o'clock sit at sin(angle) = 0, so they can only clear the
+ * hub HORIZONTALLY — raising ry cannot help them, because that branch of the
+ * solver requires s > 0.01. So rx must be at least hubW/2 + cardW/2 + gap, and rx
+ * is W/2 - cardW/2 - 12:
+ *
+ *   rx  ≥ 160 + 130 + 24 = 314      (hub 320 wide, spoke 260 wide, gap 24)
+ *   W   ≥ 2 × (314 + 130 + 12) = 912
+ *
+ * Full-Send uses 1000px, which is right for a page that owns the window. Here the
+ * container is a panel inside the Sanity Dashboard, so every pixel spent on the
+ * queue rail comes off this budget — hence measuring the real container and using
+ * the real floor instead of a round number.
+ */
+const RADIAL_MIN_WIDTH = 920
 const MAX_SPOKES = 8
 const GAP = 24
 const MAX_RX = 560

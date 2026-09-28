@@ -39,6 +39,13 @@ body {
   max-width: 1480px;
   margin: 0 auto;
   padding: 24px 22px 72px;
+  /* Everything below sizes itself against THIS, not the viewport. The app renders
+     in a panel inside the Sanity Dashboard, where the window can be 1600px wide
+     while the space here is 900px — a media query would promise room that is not
+     there. Same reason useRadialLayout measures the wheel's parent rather than
+     asking matchMedia. */
+  container-type: inline-size;
+  container-name: desk;
 }
 
 /* ---- header --------------------------------------------------------------- */
@@ -118,25 +125,29 @@ body {
 
 /* ---- rail + stage --------------------------------------------------------- */
 
+/* The wheel needs 920px of container to exist at all (see useRadialLayout), and a
+   250px rail plus its gap comes straight off that budget. So the two-column
+   layout only appears once there is room for both; below that the rail runs
+   horizontally across the top and the wheel gets the whole panel. Otherwise the
+   rail silently costs you the wheel. */
 .desk-split {
   display: grid;
-  grid-template-columns: 250px minmax(0, 1fr);
-  gap: 22px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
   align-items: start;
 }
-@media (max-width: 900px) {
+@container desk (min-width: 1250px) {
   .desk-split {
-    grid-template-columns: 1fr;
+    grid-template-columns: 250px minmax(0, 1fr);
+    gap: 22px;
   }
 }
 
 .rail {
-  position: sticky;
-  top: 18px;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 12px;
+  padding: 10px;
 }
 .rail-head {
   font-size: 11px;
@@ -149,12 +160,21 @@ body {
 .rail ul {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 0 2px;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  /* Horizontal while the rail is a strip on top. */
+  flex-direction: row;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.rail li {
+  flex: 0 0 auto;
 }
 .rail-item {
+  /* Wide enough to read while the rail is a horizontal strip; released back to 0
+     in the container query below, once it becomes a sidebar. */
+  min-width: 178px;
   width: 100%;
   text-align: left;
   background: none;
@@ -194,6 +214,26 @@ body {
   border-radius: 50%;
   background: var(--cyan);
   flex-shrink: 0;
+}
+
+/* Once there is room for a sidebar, the rail becomes one. */
+@container desk (min-width: 1250px) {
+  .rail {
+    position: sticky;
+    top: 18px;
+    padding: 12px;
+  }
+  .rail ul {
+    flex-direction: column;
+    gap: 2px;
+    overflow: visible;
+  }
+  .rail li {
+    flex: 1 1 auto;
+  }
+  .rail-item {
+    min-width: 0;
+  }
 }
 
 .stage {
